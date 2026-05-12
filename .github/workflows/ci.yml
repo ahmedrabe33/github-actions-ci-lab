@@ -1,44 +1,42 @@
-name: Python CI Pipeline on Cloud Runner
+name: Simple Self Hosted Runner Test
 
 on:
   push:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
-
   workflow_dispatch:
 
 jobs:
-  test:
+  simple-test:
     runs-on: [self-hosted, rabie]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check runner machine
+      - name: Show runner information
         run: |
-          echo "Running on self-hosted runner"
+          echo "This job is running on my cloud runner"
+          echo "Hostname:"
           hostname
+          echo "User:"
           whoami
+          echo "Current path:"
           pwd
-          python3 --version
+          echo "Date:"
+          date
 
-      - name: Create virtual environment
+      - name: Create a file on the runner
         run: |
-          python3 -m venv .venv
-          . .venv/bin/activate
-          python -m pip install --upgrade pip
+          echo "Hello from GitHub Actions self-hosted runner" > runner-proof.txt
+          echo "Runner name: rabie" >> runner-proof.txt
+          echo "Created at: $(date)" >> runner-proof.txt
 
-      - name: Install dependencies
+      - name: Show created file
         run: |
-          . .venv/bin/activate
-          pip install -r requirements.txt
+          cat runner-proof.txt
 
-      - name: Run tests
+      - name: List workspace files
         run: |
-          . .venv/bin/activate
-          pytest
+          ls -la
